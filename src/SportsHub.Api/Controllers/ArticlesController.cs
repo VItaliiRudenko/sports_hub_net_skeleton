@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SportsHub.Api.Models.Articles;
 using SportsHub.Api.Services;
 
 namespace SportsHub.Api.Controllers;
@@ -26,11 +27,28 @@ public class ArticlesController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("")]
-    [Authorize]
-    public async Task<IActionResult> CreateArticle()
+    [HttpGet("{articleId}")]
+    public async Task<IActionResult> GetArticle(int articleId)
     {
-        await _articlesService.CreateArticle();
-        return Ok();
+        var result = await _articlesService.GetArticle(articleId);
+        
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [Authorize]
+    [HttpPost("")]
+    public async Task<IActionResult> CreateArticle(CreateArticleRequest request)
+    {
+        var result = await _articlesService.CreateArticle(request);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPatch("{articleId}")]
+    public async Task<IActionResult> CreateArticle(int articleId, UpdateArticleRequest request)
+    {
+        var result = await _articlesService.UpdateArticle(articleId, request);
+
+        return result is null ? NotFound() : Ok(result);
     }
 }

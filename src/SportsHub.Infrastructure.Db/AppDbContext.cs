@@ -55,12 +55,10 @@ public class AppDbContext : IdentityDbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
-                    entry.Entity.CreatedByUserId = userId;
+                    entry.Entity.TrackCreation(userId);
                     break;
                 case EntityState.Modified:
-                    entry.Entity.UpdatedAt = DateTime.UtcNow;
-                    entry.Entity.UpdatedByUserId = userId;
+                    entry.Entity.TrackUpdate(userId);
                     break;
             }
         }

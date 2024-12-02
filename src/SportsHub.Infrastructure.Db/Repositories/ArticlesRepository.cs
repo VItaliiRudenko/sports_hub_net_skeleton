@@ -17,6 +17,16 @@ public class ArticlesRepository : RepositoryBase, IArticlesRepository
 
     public Task<List<Article>> GetAll()
     {
-        return DbContext.Articles.AsNoTracking().ToListAsync();
+        return DbContext.Articles
+            .Include(a => a.Comments)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public Task<Article> GetById(int articleId)
+    {
+        return DbContext.Articles
+            .Include(a => a.Comments)
+            .FirstOrDefaultAsync(a => a.Id == articleId);
     }
 }

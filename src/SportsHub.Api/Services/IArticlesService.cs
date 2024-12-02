@@ -4,7 +4,8 @@ namespace SportsHub.Api.Services;
 
 public interface IArticlesService
 {
-    Task<ArticleResponse> CreateArticle();
+    Task<ArticleResponse> CreateArticle(CreateArticleRequest request);
     Task<ArticleResponse[]> GetArticles();
-    Task<ArticleResponse> UpdateArticle();
+    Task<ArticleResponse> GetArticle(int articleId);
+    Task<ArticleResponse> UpdateArticle(int articleId, UpdateArticleRequest request);
 }

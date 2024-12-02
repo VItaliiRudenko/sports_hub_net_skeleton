@@ -21,14 +21,9 @@ internal class ArticlesService : IArticlesService
         _map = map;
     }
 
-    public async Task<ArticleResponse> CreateArticle()
+    public async Task<ArticleResponse> CreateArticle(CreateArticleRequest request)
     {
-        var article = new Article
-        {
-            Title = "The title",
-            ShortDescription = "Short desc",
-            Description = "Asdaf asdijdfab asdkjmvdadg as dgojkdb"
-        };
+        var article = new Article(request.Title, request.ShortDescription, request.Description);
 
         _articlesRepository.Create(article);
 
@@ -43,8 +38,25 @@ internal class ArticlesService : IArticlesService
         return articles.Select(a => _map.ToArticleResponse(a)).ToArray();
     }
 
-    public async Task<ArticleResponse> UpdateArticle()
+    public async Task<ArticleResponse> GetArticle(int articleId)
     {
-        throw new NotImplementedException();
+        var article = await _articlesRepository.GetById(articleId);
+
+        return article is null ? null : _map.ToArticleResponse(article);
+    }
+
+    public async Task<ArticleResponse> UpdateArticle(int articleId, UpdateArticleRequest request)
+    {
+        var article = await _articlesRepository.GetById(articleId);
+        if (article is null)
+        {
+            return null;
+        }
+
+        article.ApplyUpdate(request.Title, request.ShortDescription, request.Description);
+
+        await _unitOfWork.CommitCurrentAsync();
+
+        return _map.ToArticleResponse(article);
     }
 }
