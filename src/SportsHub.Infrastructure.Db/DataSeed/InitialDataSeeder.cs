@@ -57,6 +57,12 @@ public class InitialDataSeeder
 
     private void SeedArticles()
     {
+        var articlesCount = _appDbContext.Articles.Count();
+        if (articlesCount > 0)
+        {
+            return;
+        }
+
         var userId = _appDbContext.Users.Select(u => u.Id).FirstOrDefault();
 
         SeedArticle("The Art of Scoring Goals", "Learn how to score goals like a pro with this comprehensive guide to the art of goal-scoring.", userId);
