@@ -1,8 +1,10 @@
-﻿using SportsHub.Domain.Entities;
+﻿using SportsHub.Api.Models.Articles;
 
 namespace SportsHub.Api.Services;
 
 public interface IArticlesService
 {
-    Task<Article> CreateArticle();
+    Task<ArticleResponse> CreateArticle();
+    Task<ArticleResponse[]> GetArticles();
+    Task<ArticleResponse> UpdateArticle();
 }

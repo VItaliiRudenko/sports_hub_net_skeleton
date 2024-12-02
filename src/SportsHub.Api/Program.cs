@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SportsHub.Api.Extensions;
 using SportsHub.Api.Services;
+using SportsHub.Domain.Repositories;
 using SportsHub.Domain.Services;
 using SportsHub.Infrastructure.Db;
+using SportsHub.Infrastructure.Db.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -27,8 +29,8 @@ builder.Services.AddSwaggerGen(setup =>
 {
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
-        BearerFormat = "JWT",
-        Name = "JWT Authentication",
+        BearerFormat = "BEARER",
+        Name = "BEARER Authentication",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
         Scheme = JwtBearerDefaults.AuthenticationScheme,
@@ -61,6 +63,9 @@ builder.Services.AddDbContext<AppDbContext>(o =>
         builder.Configuration.GetConnectionString("SportsHubDb"),
         m => m.MigrationsAssembly("SportsHub.Infrastructure.Db.Migrations"))
      .UseSnakeCaseNamingConvention());
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IArticlesRepository, ArticlesRepository>();
 
 builder.Services.AddHttpContextAccessor();
 

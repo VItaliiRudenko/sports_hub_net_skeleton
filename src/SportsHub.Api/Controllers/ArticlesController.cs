@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SportsHub.Api.Services;
-using SportsHub.Domain.Entities;
 
 namespace SportsHub.Api.Controllers;
 
@@ -10,26 +10,24 @@ public class ArticlesController : ControllerBase
 {
     private readonly ILogger<ArticlesController> _logger;
     private readonly IArticlesService _articlesService;
-    private readonly IApplicationMapper _map;
 
     public ArticlesController(
         ILogger<ArticlesController> logger,
-        IArticlesService articlesService,
-        IApplicationMapper map)
+        IArticlesService articlesService)
     {
         _logger = logger;
         _articlesService = articlesService;
-        _map = map;
     }
 
     [HttpGet("")]
-    public IActionResult Get()
+    public async Task<IActionResult> Get()
     {
-        var result = Enumerable.Empty<Article>().Select(a => _map.ToArticleResponse(a)).ToArray();
+        var result = await _articlesService.GetArticles();
         return Ok(result);
     }
 
     [HttpPost("")]
+    [Authorize]
     public async Task<IActionResult> CreateArticle()
     {
         await _articlesService.CreateArticle();
