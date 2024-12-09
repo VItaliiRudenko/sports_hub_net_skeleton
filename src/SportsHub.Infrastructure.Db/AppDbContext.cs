@@ -19,6 +19,7 @@ public class AppDbContext : IdentityDbContext
     }
 
     public DbSet<Article> Articles { get; set; }
+    public DbSet<FileItem> FileItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

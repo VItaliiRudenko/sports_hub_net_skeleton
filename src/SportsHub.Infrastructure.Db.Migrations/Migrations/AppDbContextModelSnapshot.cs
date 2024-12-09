@@ -370,6 +370,37 @@ namespace SportsHub.Infrastructure.Db.Migrations.Migrations
                     b.ToTable("article_comment", (string)null);
                 });
 
+            modelBuilder.Entity("SportsHub.Domain.Entities.FileItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("bytea")
+                        .HasColumnName("content");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("text")
+                        .HasColumnName("content_type");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("text")
+                        .HasColumnName("file_name");
+
+                    b.HasKey("Id")
+                        .HasName("pk_file_items");
+
+                    b.HasIndex("FileName")
+                        .IsUnique()
+                        .HasDatabaseName("ix_file_items_file_name");
+
+                    b.ToTable("file_items", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)

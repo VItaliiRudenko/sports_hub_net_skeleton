@@ -1,14 +1,11 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using SportsHub.Api.Extensions;
 using SportsHub.Api.Services;
-using SportsHub.Domain.Repositories;
 using SportsHub.Domain.Services;
 using SportsHub.Infrastructure.Db;
-using SportsHub.Infrastructure.Db.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
@@ -58,14 +55,7 @@ builder.Services.AddIdentityCore<IdentityUser>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
-builder.Services.AddDbContext<AppDbContext>(o => 
-    o.UseNpgsql(
-        builder.Configuration.GetConnectionString("SportsHubDb"),
-        m => m.MigrationsAssembly("SportsHub.Infrastructure.Db.Migrations"))
-     .UseSnakeCaseNamingConvention());
-
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IArticlesRepository, ArticlesRepository>();
+builder.Services.AddDbServices(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
 

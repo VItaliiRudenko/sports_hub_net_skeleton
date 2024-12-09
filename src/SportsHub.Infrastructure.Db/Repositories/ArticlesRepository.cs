@@ -4,7 +4,7 @@ using SportsHub.Domain.Repositories;
 
 namespace SportsHub.Infrastructure.Db.Repositories;
 
-public class ArticlesRepository : RepositoryBase, IArticlesRepository
+internal class ArticlesRepository : RepositoryBase, IArticlesRepository
 {
     public ArticlesRepository(AppDbContext dbContext) : base(dbContext)
     {

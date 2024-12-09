@@ -16,6 +16,7 @@ public class InitialDataSeeder
     {
         SeedUsers();
         SeedArticles();
+        SeedImages();
     }
 
     private void SeedUsers()
@@ -107,6 +108,24 @@ public class InitialDataSeeder
         article.TrackCreation(userId);
 
         _appDbContext.Articles.Add(article);
+
+        _appDbContext.SaveChanges();
+    }
+
+    private void SeedImages()
+    {
+        var filesCount = _appDbContext.FileItems.Count();
+        if (filesCount > 0)
+        {
+            return;
+        }
+
+        _appDbContext.FileItems.Add(new FileItem("1.jpg", "image/jpg", ImageFilesToSeed.File1));
+        _appDbContext.FileItems.Add(new FileItem("2.jpg", "image/jpg", ImageFilesToSeed.File2));
+        _appDbContext.FileItems.Add(new FileItem("3.jpg", "image/jpg", ImageFilesToSeed.File3));
+        _appDbContext.FileItems.Add(new FileItem("4.jpg", "image/jpg", ImageFilesToSeed.File4));
+        _appDbContext.FileItems.Add(new FileItem("5.jpg", "image/jpg", ImageFilesToSeed.File5));
+        _appDbContext.FileItems.Add(new FileItem("6.jpg", "image/jpg", ImageFilesToSeed.File6));
 
         _appDbContext.SaveChanges();
     }
