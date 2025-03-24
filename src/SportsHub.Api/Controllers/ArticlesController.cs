@@ -6,7 +6,7 @@ using SportsHub.Api.Services;
 namespace SportsHub.Api.Controllers;
 
 [ApiController]
-[Route("articles")]
+[Route("api/articles")]
 public class ArticlesController : ControllerBase
 {
     private readonly ILogger<ArticlesController> _logger;
@@ -45,7 +45,16 @@ public class ArticlesController : ControllerBase
 
     [Authorize]
     [HttpPatch("{articleId}")]
-    public async Task<IActionResult> CreateArticle(int articleId, UpdateArticleRequest request)
+    public async Task<IActionResult> PatchArticle(int articleId, UpdateArticleRequest request)
+    {
+        var result = await _articlesService.UpdateArticle(articleId, request);
+
+        return result is null ? NotFound() : Ok(result);
+    }
+
+    [Authorize]
+    [HttpPut("{articleId}")]
+    public async Task<IActionResult> PutArticle(int articleId, UpdateArticleRequest request)
     {
         var result = await _articlesService.UpdateArticle(articleId, request);
 

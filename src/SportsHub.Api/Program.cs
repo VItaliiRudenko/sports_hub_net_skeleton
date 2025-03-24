@@ -14,6 +14,15 @@ builder.Configuration
 
 // Add services to the container.
 
+var allowedHosts = "http://localhost:3000";//builder.Configuration["AllowedHosts"];
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policy => policy
+        .WithOrigins(allowedHosts.Split(';', StringSplitOptions.RemoveEmptyEntries))
+        .SetIsOriginAllowedToAllowWildcardSubdomains()
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .WithExposedHeaders("Content-Disposition")));
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -36,7 +45,7 @@ builder.Services.AddSwaggerGen(setup =>
         Reference = new OpenApiReference
         {
             Id = JwtBearerDefaults.AuthenticationScheme,
-            Type = ReferenceType.SecurityScheme
+            Type = ReferenceType.SecurityScheme,
         }
     };
 
@@ -75,6 +84,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+app.UseCors();
 
 app.MapControllers();
 

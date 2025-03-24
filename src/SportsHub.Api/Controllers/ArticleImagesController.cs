@@ -4,7 +4,7 @@ using SportsHub.Domain.Services;
 namespace SportsHub.Api.Controllers;
 
 [ApiController]
-[Route("article-images")]
+[Route("api/article-images")]
 public class ArticleImagesController : ControllerBase
 {
     private readonly ILogger<ArticleImagesController> _logger;
