@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SportsHub.Api.Extensions;
 using SportsHub.Api.Services;
@@ -58,7 +59,17 @@ builder.Services.AddSwaggerGen(setup =>
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(bearerOptions =>
+    {
+        bearerOptions.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKey =
+                new SymmetricSecurityKey("SazsdfasgfdgfsdfSazsdfasgfdgfsdfSazsdfasgfdgfsdfSazsdfasgfdgfsdf"u8.ToArray()),
+            ValidIssuer = "https://auth.sportshub.example.com",
+            ValidAudience = "https://app.sportshub.example.com",
+        };
+    });
 
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddEntityFrameworkStores<AppDbContext>()
@@ -70,6 +81,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IContextDataProvider, ContextDataProvider>();
 
+builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<IArticlesService, ArticlesService>();
 builder.Services.AddScoped<IApplicationMapper, ApplicationMapper>();
 
@@ -88,7 +100,5 @@ app.UseAuthorization();
 app.UseCors();
 
 app.MapControllers();
-
-app.MapIdentityApi<IdentityUser>();
 
 app.Run();
