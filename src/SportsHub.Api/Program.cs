@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SportsHub.Api.Extensions;
+using SportsHub.Api.Middlewares;
 using SportsHub.Api.Services;
 using SportsHub.Domain.Services;
 using SportsHub.Infrastructure.Db;
@@ -78,6 +79,7 @@ builder.Services.AddIdentityCore<IdentityUser>()
 builder.Services.AddDbServices(builder.Configuration);
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<JwtDenyListMiddleware>();
 
 builder.Services.AddScoped<IContextDataProvider, ContextDataProvider>();
 
@@ -96,6 +98,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+app.UseMiddleware<JwtDenyListMiddleware>();
 
 app.UseCors();
 

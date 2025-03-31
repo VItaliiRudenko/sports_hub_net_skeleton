@@ -8,4 +8,5 @@ public interface IAuthorizationService
     Task<Result<SignupResponse, string[]>> SignUp(SignupRequest signupRequest);
     Task<Result<SignInResponse>> SignIn(SignInRequest signInRequest);
     Task<Result> SignOut();
+    Task<bool> IsTokenInDenyList();
 }

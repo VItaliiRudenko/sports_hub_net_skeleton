@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IArticlesRepository, ArticlesRepository>();
+        services.AddScoped<IJwtDenyListRepository, JwtDenyListRepository>();
 
         services.AddScoped<IFileStorage, DbFileStorage>();
     }
