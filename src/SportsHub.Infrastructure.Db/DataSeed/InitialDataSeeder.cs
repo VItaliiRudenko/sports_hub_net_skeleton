@@ -66,13 +66,12 @@ public class InitialDataSeeder
 
         var userId = _appDbContext.Users.Select(u => u.Id).FirstOrDefault();
 
-        SeedArticle("The Art of Scoring Goals", "Learn how to score goals like a pro with this comprehensive guide to the art of goal-scoring.", userId);
-        SeedArticle("Mastering the Perfect Serve", "Master the perfect serve with this step-by-step guide to serving in tennis.", userId);
-        SeedArticle("Unleashing Your Inner Athlete", "Unleash your inner athlete with this guide to becoming the best athlete you can be.", userId);
-        SeedArticle("The Science of Sports Performance", "Discover the science behind sports performance and how to improve your game.", userId);
-        SeedArticle("Achieving Victory Through Teamwork", "Achieve victory through teamwork with this guide to working together as a team.", userId);
-        SeedArticle("Exploring the World of Extreme Sports", "Explore the world of extreme sports and learn how to get started with this guide.", userId);
-
+        SeedArticle("The Art of Scoring Goals", "Learn how to score goals like a pro with this comprehensive guide to the art of goal-scoring.", "1.jpg", userId);
+        SeedArticle("Mastering the Perfect Serve", "Master the perfect serve with this step-by-step guide to serving in tennis.", "2.jpg", userId);
+        SeedArticle("Unleashing Your Inner Athlete", "Unleash your inner athlete with this guide to becoming the best athlete you can be.", "3.jpg", userId);
+        SeedArticle("The Science of Sports Performance", "Discover the science behind sports performance and how to improve your game.", "4.jpg", userId);
+        SeedArticle("Achieving Victory Through Teamwork", "Achieve victory through teamwork with this guide to working together as a team.", "5.jpg", userId);
+        SeedArticle("Exploring the World of Extreme Sports", "Explore the world of extreme sports and learn how to get started with this guide.", "6.jpg", userId);
     }
 
     private static readonly string[] ArticleComments = {
@@ -88,7 +87,7 @@ public class InitialDataSeeder
         "I will be recommending this article to everyone I know.",
     };
 
-    private void SeedArticle(string title, string shortDescription, string userId)
+    private void SeedArticle(string title, string shortDescription, string imageFileName, string userId)
     {
         var article = new Article(title, shortDescription,
             $"This is the description of the article with title: {title}");
@@ -106,6 +105,7 @@ public class InitialDataSeeder
         }
 
         article.TrackCreation(userId);
+        article.SetImage(imageFileName);
 
         _appDbContext.Articles.Add(article);
 

@@ -35,7 +35,7 @@ public class Article : AuditEntity
         }
     }
 
-    private void SetImage(string imageFileName)
+    public void SetImage(string imageFileName)
     {
         ImageFileName = imageFileName;
     }
