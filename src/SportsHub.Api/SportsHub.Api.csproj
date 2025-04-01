@@ -20,4 +20,9 @@
     <ProjectReference Include="..\SportsHub.Infrastructure.Db\SportsHub.Infrastructure.Db.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SportsHub.Api.UnitTests" />
+    <InternalsVisibleTo Include="SportsHub.Api.IntegrationTests" />
+  </ItemGroup>
+
 </Project>
