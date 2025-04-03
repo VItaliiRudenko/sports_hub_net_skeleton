@@ -1,1 +1,1 @@
-# net_be_genai_plgrnd
+# net_be_plgrnd
