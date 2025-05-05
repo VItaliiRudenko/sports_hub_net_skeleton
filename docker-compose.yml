@@ -35,7 +35,7 @@ services:
       ConnectionStrings__SportsHubDb: "Server=db;Database=net_be_genai_plgrnd_db;User ID=postgres;Password=example;Port=5432"
 
   react_frontend:
-    build: ../reactjs_fe_genai_plgrnd
+    build: ../reactjs_fe_plgrnd
     depends_on:
       - backend
     ports:
