@@ -34,7 +34,7 @@ services:
     environment:
       ConnectionStrings__SportsHubDb: "Server=db;Database=net_be_genai_plgrnd_db;User ID=postgres;Password=example;Port=5432"
 
-  react_frontend:
+  angular_frontend:
     build: ../sports_hub_angular_skeleton
     depends_on:
       - backend
@@ -43,7 +43,7 @@ services:
     restart: always
     environment:
       REACT_APP_API_URL: "http://localhost:3002"
-      API_URL: "http://localhost:3002/"
+      NG_APP_API_URL: "http://localhost:3002/"
 
 volumes:
   pg-db-data:
