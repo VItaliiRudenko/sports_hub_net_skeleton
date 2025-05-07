@@ -2,10 +2,10 @@
 
 ## Project Description
 
-This is a draft pet project for testing Generative AI on different software engineering tasks. It is planned to evolve and grow over time. Specifically, this repo will be a .NET playground. As for now, we only have the React.js application as a front-end, but in the future, we plan to extend it to other technologies. The application's legend is based on the sports-hub application description from the following repo: [Sports-Hub](https://github.com/dark-side/sports-hub).
+This is a draft pet project for testing Generative AI on different software engineering tasks. It is planned to evolve and grow over time. Specifically, this repo will be a .NET playground. As for now, we only have the Angular application as a front-end, but in the future, we plan to extend it to other technologies. The application's legend is based on the sports-hub application description from the following repo: [Sports-Hub](https://github.com/dark-side/sports-hub).
 
 ## Available Front-End applications
-- [React.js](https://github.com/rtriska/reactjs_fe_plgrnd)
+- [Angular](https://github.com/dark-side/sports_hub_angular_skeleton)
 
 ## Dependencies
 
@@ -21,8 +21,8 @@ The mentioned dependencies can be installed using the official documentation [he
 To run the web application with the React front-end, clone the following repositories within the same folder:
 
 ```sh
-git clone https://github.com/rtriska/net_be_plgrnd.git
-git clone https://github.com/rtriska/reactjs_fe_plgrnd.git
+git clone https://github.com/dark-side/sports_hub_net_skeleton.git
+git clone https://github.com/dark-side/sports_hub_angular_skeleton.git
 ```
 
 ### Run Docker Compose
