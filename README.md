@@ -9,10 +9,10 @@ This is a draft pet project for testing Generative AI on different software engi
 
 ## Dependencies
 
+- Docker
+- Docker Compose
 
-- Rancher (for container orchestration and management)
-
-You can install Rancher by following the [Rancher Quick Start Guide](https://ranchermanager.docs.rancher.com/pages-for-subheaders/quick-start-guide).
+The mentioned dependencies can be installed using the official documentation [here](https://docs.docker.com/compose/install/).
 
 ## Setup and Running the Application
 
@@ -25,18 +25,21 @@ git clone https://github.com/dark-side/sports_hub_net_skeleton.git
 git clone https://github.com/dark-side/sports_hub_angular_skeleton.git
 ```
 
+### Run Docker Compose
 
-### Deploy with Rancher
+Navigate to the back-end application directory and run:
 
-1. Open the Rancher UI and navigate to your cluster.
-2. Use the "Deploy from Compose" option to import your `docker-compose.yml` file, or manually create workloads for the backend and frontend services using the Dockerfiles provided.
-3. Adjust environment variables, ports, and volumes as needed in the Rancher UI.
-4. Start the workloads and monitor their status from the Rancher dashboard.
+```sh
+docker compose up
+```
 
+### Attach to the Backend Container
 
-### Accessing the Backend Workload
+Run `docker ps` and copy the `backend` application container ID. Then, connect to the container with the following command:
 
-In Rancher, you can access the backend container's shell by using the "Execute Shell" option available in the workload's details page in the Rancher UI. This allows you to run commands inside the running container directly from your browser.
+```sh
+docker exec -ti <CONTAINER ID> /bin/bash
+```
 
 ### Database migrations
 
