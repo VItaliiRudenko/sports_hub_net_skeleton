@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../api_docs_genai_playground" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../sports-hub" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../sports_hub_angular_skeleton" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../sports_hub_react_skeleton" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../sports_hub_ruby_skeleton" vcs="Git" />
+  </component>
+</project>

@@ -9,10 +9,13 @@ This is a draft pet project for testing Generative AI on different software engi
 
 ## Dependencies
 
-- Docker
-- Docker Compose
+- Rancher
 
-The mentioned dependencies can be installed using the official documentation [here](https://docs.docker.com/compose/install/).
+You can install Rancher Desktop by following the [Installation Guide](https://docs.rancherdesktop.io/getting-started/installation/#macos)
+
+Ensure to select "docker (moby)" for docker-compose compatibility
+
+In case of compatibility issues Administrative Access might be required: Rancher Desktop -> Preferences -> Application -> Administrative Access
 
 ## Setup and Running the Application
 
