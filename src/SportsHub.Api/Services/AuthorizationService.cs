@@ -34,23 +34,23 @@ internal class AuthorizationService : IAuthorizationService
 
     public async Task<Result<SignupResponse, string[]>> SignUp(SignupRequest signupRequest)
     {
-        if (!string.Equals(signupRequest.User.Password, signupRequest.User.PasswordConfirmation))
+        if (!string.Equals(signupRequest.Registration.Password, signupRequest.Registration.PasswordConfirmation))
         {
             return Result.Failure<SignupResponse, string[]>(["Password does not match with confirmation"]);
         }
 
-        var identityUser = new IdentityUser(signupRequest.User.Email)
+        var identityUser = new IdentityUser(signupRequest.Registration.Email)
         {
-            Email = signupRequest.User.Email,
+            Email = signupRequest.Registration.Email,
         };
 
-        var result = await _userManager.CreateAsync(identityUser, signupRequest.User.Password);
+        var result = await _userManager.CreateAsync(identityUser, signupRequest.Registration.Password);
         if (!result.Succeeded)
         {
             return Result.Failure<SignupResponse, string[]>(result.Errors.Select(x => x.Description).ToArray());
         }
 
-        var user = await _userManager.FindByEmailAsync(signupRequest.User.Email);
+        var user = await _userManager.FindByEmailAsync(signupRequest.Registration.Email);
         if (user is null)
         {
             return Result.Failure<SignupResponse, string[]>(["Unexpected signup error"]);
@@ -67,13 +67,13 @@ internal class AuthorizationService : IAuthorizationService
     {
         var defaultFailure = Result.Failure<SignInResponse>("Email or password is incorrect");
 
-        var user = await _userManager.FindByEmailAsync(signInRequest.User.Email);
+        var user = await _userManager.FindByEmailAsync(signInRequest.Registration.Email);
         if (user is null)
         {
             return defaultFailure;
         }
 
-        var isPasswordValid = await _userManager.CheckPasswordAsync(user, signInRequest.User.Password);
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, signInRequest.Registration.Password);
         if (!isPasswordValid)
         {
             return defaultFailure;
