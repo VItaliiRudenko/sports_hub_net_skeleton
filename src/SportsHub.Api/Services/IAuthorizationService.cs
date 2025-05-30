@@ -9,4 +9,6 @@ public interface IAuthorizationService
     Task<Result<SignInResponse>> SignIn(SignInRequest signInRequest);
     Task<Result> SignOut();
     Task<bool> IsTokenInDenyList();
+    Task<Result> ForgotPassword(string email);
+    Task<Result> ResetPassword(ResetPasswordRequest request);
 }

@@ -17,19 +17,22 @@ internal class AuthorizationService : IAuthorizationService
     private readonly ILogger<AuthorizationService> _logger;
     private readonly IJwtDenyListRepository _denyListRepository;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IEmailService _emailService;
 
     public AuthorizationService(
         UserManager<IdentityUser> userManager,
         IHttpContextAccessor httpContextAccessor,
         ILogger<AuthorizationService> logger,
         IJwtDenyListRepository denyListRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IEmailService emailService)
     {
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
         _logger = logger;
         _denyListRepository = denyListRepository;
         _unitOfWork = unitOfWork;
+        _emailService = emailService;
     }
 
     public async Task<Result<SignupResponse, string[]>> SignUp(SignupRequest signupRequest)
@@ -172,5 +175,67 @@ internal class AuthorizationService : IAuthorizationService
             _logger.LogError(e, "Unexpected error while parsing token");
             return null;
         }
+    }
+
+    public async Task<Result> ForgotPassword(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            // Return success even if user doesn't exist to prevent email enumeration
+            return Result.Success();
+        }
+
+        // Check if there's an existing valid token
+        var existingToken = await _userManager.GetAuthenticationTokenAsync(user, "Default", "PasswordReset");
+        if (!string.IsNullOrEmpty(existingToken))
+        {
+            return Result.Failure("A password reset request was already sent. Please wait 15 minutes before requesting another one.");
+        }
+
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        await _userManager.SetAuthenticationTokenAsync(user, "Default", "PasswordReset", token);
+
+        try
+        {
+            await _emailService.SendPasswordResetEmailAsync(email, token);
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send password reset email to {Email}", email);
+            return Result.Failure("Failed to send password reset email. Please try again later.");
+        }
+    }
+
+    public async Task<Result> ResetPassword(ResetPasswordRequest request)
+    {
+        if (!string.Equals(request.Password, request.PasswordConfirmation))
+        {
+            return Result.Failure("Password does not match with confirmation");
+        }
+
+        var user = await _userManager.FindByEmailAsync(request.Email);
+        if (user == null)
+        {
+            return Result.Failure("Invalid request");
+        }
+
+        var storedToken = await _userManager.GetAuthenticationTokenAsync(user, "Default", "PasswordReset");
+        if (string.IsNullOrEmpty(storedToken) || storedToken != request.Token)
+        {
+            return Result.Failure("Invalid or expired token");
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, request.Token, request.Password);
+        if (!result.Succeeded)
+        {
+            return Result.Failure(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
+        // Remove the used token
+        await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "PasswordReset");
+
+        return Result.Success();
     }
 }
