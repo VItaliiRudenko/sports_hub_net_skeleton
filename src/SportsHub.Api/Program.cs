@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -35,6 +36,29 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
+    // API Information
+    setup.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "SportsHub API",
+        Version = "v1",
+        Description = "A comprehensive API for managing sports articles, authentication, and file operations",
+        Contact = new OpenApiContact
+        {
+            Name = "SportsHub Team",
+            Email = "support@sportshub.example.com"
+        },
+        License = new OpenApiLicense
+        {
+            Name = "MIT License",
+            Url = new Uri("https://opensource.org/licenses/MIT")
+        }
+    });
+
+    // Include XML comments
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    setup.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    // JWT Security Configuration
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "BEARER",
@@ -57,6 +81,10 @@ builder.Services.AddSwaggerGen(setup =>
     {
         { jwtSecurityScheme, Array.Empty<string>() }
     });
+
+    // Configure tags for better organization
+    setup.TagActionsBy(api => new[] { api.GroupName ?? api.ActionDescriptor.RouteValues["controller"] });
+    setup.DocInclusionPredicate((name, api) => true);
 });
 
 builder.Services.AddAuthorization();
