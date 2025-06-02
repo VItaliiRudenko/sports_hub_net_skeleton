@@ -41,7 +41,7 @@ internal static class SystemUnderTest
 
         var response = await httpClient.PostAsJsonAsync("/api/auth/sign_in", new SignInRequest
         {
-            Registration = new SignInRequestUserModel
+            User = new SignInRequestUserModel
             {
                 Email = "test1@gmail.com",
                 Password = "password1",

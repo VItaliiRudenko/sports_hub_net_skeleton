@@ -11,7 +11,7 @@ public class SignInRequest
     /// User authentication credentials
     /// </summary>
     [Required]
-    public SignInRequestUserModel Registration { get; set; }
+    public SignInRequestUserModel User { get; set; }
 }
 
 /// <summary>

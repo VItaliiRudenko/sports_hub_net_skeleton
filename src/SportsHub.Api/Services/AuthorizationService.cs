@@ -100,13 +100,13 @@ public class AuthorizationService : IAuthorizationService
     {
         var defaultFailure = Result.Failure<SignInResponse>("Email or password is incorrect");
 
-        var user = await _userManager.FindByEmailAsync(signInRequest.Registration.Email);
+        var user = await _userManager.FindByEmailAsync(signInRequest.User.Email);
         if (user is null)
         {
             return defaultFailure;
         }
 
-        var isPasswordValid = await _userManager.CheckPasswordAsync(user, signInRequest.Registration.Password);
+        var isPasswordValid = await _userManager.CheckPasswordAsync(user, signInRequest.User.Password);
         if (!isPasswordValid)
         {
             return defaultFailure;

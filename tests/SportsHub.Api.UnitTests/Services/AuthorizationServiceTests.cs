@@ -120,7 +120,7 @@ public class AuthorizationServiceTests
     {
         var signInRequest = new SignInRequest
         {
-            Registration = new SignInRequestUserModel
+            User = new SignInRequestUserModel
             {
                 Email = "nonexistent@example.com",
                 Password = "password123"
@@ -141,7 +141,7 @@ public class AuthorizationServiceTests
     {
         var signInRequest = new SignInRequest
         {
-            Registration = new SignInRequestUserModel
+            User = new SignInRequestUserModel
             {
                 Email = "test@example.com",
                 Password = "wrongpassword"
@@ -166,7 +166,7 @@ public class AuthorizationServiceTests
     {
         var signInRequest = new SignInRequest
         {
-            Registration = new SignInRequestUserModel
+            User = new SignInRequestUserModel
             {
                 Email = "test@example.com",
                 Password = "password123"
