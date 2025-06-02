@@ -35,6 +35,32 @@ builder.Services.AddControllers()
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
+    // Set up Swagger to use XML comments
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    setup.IncludeXmlComments(xmlPath);
+    
+    // Add domain XML comments if they exist
+    var domainXmlFile = "SportsHub.Domain.xml";
+    var domainXmlPath = Path.Combine(AppContext.BaseDirectory, domainXmlFile);
+    if (File.Exists(domainXmlPath))
+    {
+        setup.IncludeXmlComments(domainXmlPath);
+    }
+    
+    // Configure Swagger document information
+    setup.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Sports Hub API", 
+        Version = "v1",
+        Description = "API for the Sports Hub application",
+        Contact = new OpenApiContact
+        {
+            Name = "Sports Hub Team",
+            Email = "support@sportshub.example.com"
+        }
+    });
+    
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "BEARER",
