@@ -1,4 +1,5 @@
 ﻿using SportsHub.Api.Models.Articles;
+using SportsHub.Api.Models.Languages;
 using SportsHub.Domain.Entities;
 
 namespace SportsHub.Api.Services;
@@ -36,6 +37,28 @@ internal class ApplicationMapper : IApplicationMapper
             ImageUrl = $"{apiBaseUrl}/api/article-images/{article.ImageFileName}",
             CreatedAt = article.CreatedAt,
             UpdatedAt = article.UpdatedAt,
+        };
+    }
+
+    /// <summary>
+    /// Converts a Language domain entity to a LanguageResponse API model.
+    /// </summary>
+    /// <param name="language">The Language domain entity to convert.</param>
+    /// <returns>A LanguageResponse containing the mapped language data.</returns>
+    public LanguageResponse ToLanguageResponse(Language language)
+    {
+        return new LanguageResponse
+        {
+            Id = language.Id,
+            Name = language.Name,
+            Code = language.Code,
+            IsActive = language.IsActive,
+            IsEnglish = language.IsEnglish,
+            CanBeDeleted = language.CanBeDeleted,
+            CreatedAt = language.CreatedAt,
+            UpdatedAt = language.UpdatedAt,
+            CreatedByUserId = language.CreatedByUserId,
+            UpdatedByUserId = language.UpdatedByUserId
         };
     }
 }

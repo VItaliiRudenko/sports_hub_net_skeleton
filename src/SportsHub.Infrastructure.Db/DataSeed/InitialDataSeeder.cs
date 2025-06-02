@@ -20,6 +20,7 @@ public class InitialDataSeeder
     {
         await SeedRoles();
         await SeedUsers();
+        SeedLanguages();
         SeedArticles();
         SeedImages();
     }
@@ -175,6 +176,57 @@ public class InitialDataSeeder
         _appDbContext.FileItems.Add(new FileItem("4.jpg", "image/jpg", ImageFilesToSeed.File4));
         _appDbContext.FileItems.Add(new FileItem("5.jpg", "image/jpg", ImageFilesToSeed.File5));
         _appDbContext.FileItems.Add(new FileItem("6.jpg", "image/jpg", ImageFilesToSeed.File6));
+
+        _appDbContext.SaveChanges();
+    }
+
+    private void SeedLanguages()
+    {
+        var languagesCount = _appDbContext.Languages.Count();
+        if (languagesCount > 0)
+        {
+            return;
+        }
+
+        var userId = _appDbContext.Users.Select(u => u.Id).FirstOrDefault();
+
+        // Seed English as the default protected language
+        var englishLanguage = new Language
+        {
+            Name = "English",
+            Code = "en",
+            IsActive = true
+        };
+        englishLanguage.TrackCreation(userId);
+        _appDbContext.Languages.Add(englishLanguage);
+
+        // Seed some additional languages
+        var spanishLanguage = new Language
+        {
+            Name = "Spanish",
+            Code = "es",
+            IsActive = true
+        };
+        spanishLanguage.TrackCreation(userId);
+        _appDbContext.Languages.Add(spanishLanguage);
+
+        var frenchLanguage = new Language
+        {
+            Name = "French",
+            Code = "fr",
+            IsActive = true
+        };
+        frenchLanguage.TrackCreation(userId);
+        _appDbContext.Languages.Add(frenchLanguage);
+
+        var germanLanguage = new Language
+        {
+            Name = "German",
+            Code = "de",
+            IsActive = false
+        };
+        germanLanguage.TrackCreation(userId);
+        _appDbContext.Languages.Add(germanLanguage);
 
         _appDbContext.SaveChanges();
     }

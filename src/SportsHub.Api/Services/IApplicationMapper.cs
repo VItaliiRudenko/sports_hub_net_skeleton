@@ -1,4 +1,5 @@
 ﻿using SportsHub.Api.Models.Articles;
+using SportsHub.Api.Models.Languages;
 using SportsHub.Domain.Entities;
 
 namespace SportsHub.Api.Services;
@@ -15,4 +16,11 @@ public interface IApplicationMapper
     /// <param name="apiBaseUrl">The base URL for constructing resource URLs.</param>
     /// <returns>An ArticleResponse containing the mapped article data.</returns>
     ArticleResponse ToArticleResponse(Article article, string apiBaseUrl);
+
+    /// <summary>
+    /// Converts a Language domain entity to a LanguageResponse API model.
+    /// </summary>
+    /// <param name="language">The Language domain entity to convert.</param>
+    /// <returns>A LanguageResponse containing the mapped language data.</returns>
+    LanguageResponse ToLanguageResponse(Language language);
 }

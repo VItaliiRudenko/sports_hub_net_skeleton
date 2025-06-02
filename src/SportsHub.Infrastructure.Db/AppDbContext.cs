@@ -21,6 +21,7 @@ public class AppDbContext : IdentityDbContext
     public DbSet<Article> Articles { get; set; }
     public DbSet<FileItem> FileItems { get; set; }
     public DbSet<JwtDenyRecord> JwtDenyList { get; set; }
+    public DbSet<Language> Languages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
