@@ -10,7 +10,11 @@ using SportsHub.Infrastructure.Db;
 
 namespace SportsHub.Api.Services;
 
-internal class AuthorizationService : IAuthorizationService
+/// <summary>
+/// Service responsible for user authentication, authorization, and password management operations.
+/// Provides JWT token-based authentication with deny list support and email-based password reset functionality.
+/// </summary>
+public class AuthorizationService : IAuthorizationService
 {
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -19,6 +23,15 @@ internal class AuthorizationService : IAuthorizationService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailService _emailService;
 
+    /// <summary>
+    /// Initializes a new instance of the AuthorizationService.
+    /// </summary>
+    /// <param name="userManager">ASP.NET Core Identity user manager for user operations.</param>
+    /// <param name="httpContextAccessor">HTTP context accessor for retrieving current request information.</param>
+    /// <param name="logger">Logger instance for logging authentication operations.</param>
+    /// <param name="denyListRepository">Repository for managing JWT token deny list.</param>
+    /// <param name="unitOfWork">Unit of work for database transaction management.</param>
+    /// <param name="emailService">Email service for sending password reset emails.</param>
     public AuthorizationService(
         UserManager<IdentityUser> userManager,
         IHttpContextAccessor httpContextAccessor,
@@ -35,6 +48,14 @@ internal class AuthorizationService : IAuthorizationService
         _emailService = emailService;
     }
 
+    /// <summary>
+    /// Registers a new user account with email and password.
+    /// </summary>
+    /// <param name="signupRequest">The signup request containing user registration details.</param>
+    /// <returns>A result containing the signup response with user information or validation errors.</returns>
+    /// <remarks>
+    /// Validates that password and password confirmation match before creating the user account.
+    /// </remarks>
     public async Task<Result<SignupResponse, string[]>> SignUp(SignupRequest signupRequest)
     {
         if (!string.Equals(signupRequest.Registration.Password, signupRequest.Registration.PasswordConfirmation))
@@ -66,6 +87,15 @@ internal class AuthorizationService : IAuthorizationService
         };
     }
 
+    /// <summary>
+    /// Authenticates a user with email and password, returning a JWT token on success.
+    /// </summary>
+    /// <param name="signInRequest">The sign-in request containing user credentials.</param>
+    /// <returns>A result containing the sign-in response with JWT token or an error message.</returns>
+    /// <remarks>
+    /// Generates a JWT token with 60-minute expiration time using HMAC SHA-512 signature.
+    /// The token includes user ID, email, and a unique JTI (JWT ID) claim.
+    /// </remarks>
     public async Task<Result<SignInResponse>> SignIn(SignInRequest signInRequest)
     {
         var defaultFailure = Result.Failure<SignInResponse>("Email or password is incorrect");
@@ -112,6 +142,13 @@ internal class AuthorizationService : IAuthorizationService
         });
     }
 
+    /// <summary>
+    /// Signs out the current user by adding their JWT token to the deny list.
+    /// </summary>
+    /// <returns>A result indicating success or failure of the sign-out operation.</returns>
+    /// <remarks>
+    /// Automatically cleans up expired tokens from the deny list before adding the current token.
+    /// </remarks>
     public async Task<Result> SignOut()
     {
         var token = GetCurrentToken();
@@ -136,6 +173,10 @@ internal class AuthorizationService : IAuthorizationService
         return Result.Success();
     }
 
+    /// <summary>
+    /// Checks if the current user's JWT token is in the deny list (i.e., has been signed out).
+    /// </summary>
+    /// <returns>True if the token is denied (user is signed out), false otherwise.</returns>
     public async Task<bool> IsTokenInDenyList()
     {
         var token = GetCurrentToken();
@@ -148,6 +189,10 @@ internal class AuthorizationService : IAuthorizationService
         return (denyListITem is not null);
     }
 
+    /// <summary>
+    /// Extracts and parses the JWT token from the current HTTP request's Authorization header.
+    /// </summary>
+    /// <returns>The parsed JWT security token, or null if not found or invalid.</returns>
     private JwtSecurityToken GetCurrentToken()
     {
         var authHeader = _httpContextAccessor.HttpContext?.Request?.Headers?.Authorization;
@@ -177,6 +222,16 @@ internal class AuthorizationService : IAuthorizationService
         }
     }
 
+    /// <summary>
+    /// Initiates a password reset process by generating a reset token and sending it via email.
+    /// </summary>
+    /// <param name="email">The email address of the user requesting password reset.</param>
+    /// <returns>A result indicating success or failure of the password reset initiation.</returns>
+    /// <remarks>
+    /// - Returns success even if the user doesn't exist to prevent email enumeration attacks.
+    /// - Prevents duplicate reset requests by checking for existing valid tokens.
+    /// - Reset tokens are valid for 15 minutes.
+    /// </remarks>
     public async Task<Result> ForgotPassword(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
@@ -208,6 +263,16 @@ internal class AuthorizationService : IAuthorizationService
         }
     }
 
+    /// <summary>
+    /// Resets a user's password using a valid reset token.
+    /// </summary>
+    /// <param name="request">The password reset request containing email, token, and new password.</param>
+    /// <returns>A result indicating success or failure of the password reset operation.</returns>
+    /// <remarks>
+    /// - Validates that password and password confirmation match.
+    /// - Verifies the reset token before allowing password reset.
+    /// - Automatically removes the used token after successful reset.
+    /// </remarks>
     public async Task<Result> ResetPassword(ResetPasswordRequest request)
     {
         if (!string.Equals(request.Password, request.PasswordConfirmation))

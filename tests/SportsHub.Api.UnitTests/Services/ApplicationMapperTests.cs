@@ -35,8 +35,10 @@ public class ApplicationMapperTests
         Assert.That(result.CommentsCount, Is.EqualTo(0));
         Assert.That(result.CommentsContent, Is.Empty);
         Assert.That(result.ImageUrl, Is.EqualTo($"{apiBaseUrl}/api/article-images/{article.ImageFileName}"));
-        Assert.That(result.CreatedAt, Is.EqualTo(article.CreatedAt));
-        Assert.That(result.UpdatedAt, Is.EqualTo(article.UpdatedAt));
+        
+        // Compare DateTimeOffset and DateTime properly by converting both to UTC
+        Assert.That(result.CreatedAt.UtcDateTime, Is.EqualTo(article.CreatedAt.ToUniversalTime()));
+        Assert.That(result.UpdatedAt?.UtcDateTime, Is.EqualTo(article.UpdatedAt?.ToUniversalTime()));
     }
 
     [Test]

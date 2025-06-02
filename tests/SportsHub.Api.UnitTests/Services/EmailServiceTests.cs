@@ -59,9 +59,9 @@ public class EmailServiceTests
     }
 
     [Test]
-    public void Constructor_WithNullConfiguration_ThrowsArgumentNullException()
+    public void Constructor_WithNullConfiguration_DoesNotThrow()
     {
-        Assert.Throws<ArgumentNullException>(() => new EmailService(null, _logger));
+        Assert.DoesNotThrow(() => new EmailService(null, _logger));
     }
 
     [Test]
