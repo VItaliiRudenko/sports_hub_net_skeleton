@@ -4,7 +4,8 @@ namespace SportsHub.Api.Models.Auth;
 
 public class SignInRequest
 {
-    public SignInRequestUserModel User { get; set; }
+    [Required]
+    public SignInRequestUserModel Registration { get; set; }
 }
 
 public class SignInRequestUserModel

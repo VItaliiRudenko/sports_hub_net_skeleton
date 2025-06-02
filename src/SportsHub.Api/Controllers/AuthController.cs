@@ -51,4 +51,28 @@ public class AuthController : ControllerBase
 
         return Ok(new { Message = "Signed out successfully." });
     }
+
+    [HttpPost("forgot_password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var result = await _authService.ForgotPassword(request.Email);
+        if (result.IsFailure)
+        {
+            return BadRequest(new { Errors = new[] { result.Error } });
+        }
+
+        return Ok(new { Message = "If your email is registered, you will receive a password reset link." });
+    }
+
+    [HttpPost("reset_password")]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var result = await _authService.ResetPassword(request);
+        if (result.IsFailure)
+        {
+            return BadRequest(new { Errors = new[] { result.Error } });
+        }
+
+        return Ok(new { Message = "Password has been reset successfully." });
+    }
 }
