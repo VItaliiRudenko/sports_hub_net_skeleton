@@ -6,20 +6,40 @@ namespace SportsHub.Infrastructure.Db.DataSeed;
 public class InitialDataSeeder
 {
     private readonly AppDbContext _appDbContext;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public InitialDataSeeder(AppDbContext appDbContext)
+    public InitialDataSeeder(AppDbContext appDbContext, RoleManager<IdentityRole> roleManager, UserManager<IdentityUser> userManager)
     {
         _appDbContext = appDbContext;
+        _roleManager = roleManager;
+        _userManager = userManager;
     }
 
-    public void SeedData()
+    public async Task SeedData()
     {
-        SeedUsers();
+        await SeedRoles();
+        await SeedUsers();
         SeedArticles();
         SeedImages();
     }
 
-    private void SeedUsers()
+    private async Task SeedRoles()
+    {
+        var adminRole = await _roleManager.FindByNameAsync("Admin");
+        if (adminRole == null)
+        {
+            await _roleManager.CreateAsync(new IdentityRole("Admin"));
+        }
+
+        var userRole = await _roleManager.FindByNameAsync("User");
+        if (userRole == null)
+        {
+            await _roleManager.CreateAsync(new IdentityRole("User"));
+        }
+    }
+
+    private async Task SeedUsers()
     {
         var usersCount = _appDbContext.Users.Count();
 
@@ -28,10 +48,39 @@ public class InitialDataSeeder
             return;
         }
 
+        // Create admin user
+        await SeedUserWithRole("admin@sportshub.com", "AdminPassword123!", "Admin");
+
+        // Create regular test users
         SeedUser("test1@gmail.com", "password1");
         SeedUser("test2@gmail.com", "password2");
 
         _appDbContext.SaveChanges();
+    }
+
+    private async Task SeedUserWithRole(string email, string password, string roleName)
+    {
+        var user = new IdentityUser
+        {
+            Id = Guid.NewGuid().ToString(),
+            Email = email,
+            NormalizedEmail = email.ToUpperInvariant(),
+            UserName = email,
+            NormalizedUserName = email.ToUpperInvariant(),
+            ConcurrencyStamp = Guid.NewGuid().ToString(),
+            EmailConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString("N").ToUpper(),
+        };
+
+        var passwordHasher = new PasswordHasher<IdentityUser>();
+        var passwordHash = passwordHasher.HashPassword(user, password);
+        user.PasswordHash = passwordHash;
+
+        var result = await _userManager.CreateAsync(user);
+        if (result.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(user, roleName);
+        }
     }
 
     private void SeedUser(string email, string password)

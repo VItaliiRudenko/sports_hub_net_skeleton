@@ -101,6 +101,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddIdentityCore<IdentityUser>()
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddApiEndpoints();
 
@@ -123,7 +124,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
     app.ApplyMigrations();
-    app.SeedInitialData();
+    await app.SeedInitialData();
 }
 
 app.UseAuthorization();
