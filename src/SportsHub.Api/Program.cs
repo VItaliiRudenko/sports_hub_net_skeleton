@@ -86,6 +86,7 @@ builder.Services.AddScoped<IContextDataProvider, ContextDataProvider>();
 builder.Services.AddScoped<IAuthorizationService, AuthorizationService>();
 builder.Services.AddScoped<IArticlesService, ArticlesService>();
 builder.Services.AddScoped<IApplicationMapper, ApplicationMapper>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
