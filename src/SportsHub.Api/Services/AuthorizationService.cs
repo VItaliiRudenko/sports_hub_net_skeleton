@@ -1,9 +1,12 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SportsHub.Api.Models.Auth;
+using SportsHub.Api.Models.Configuration;
 using SportsHub.Domain.Entities;
 using SportsHub.Domain.Repositories;
 using SportsHub.Infrastructure.Db;
@@ -22,6 +25,7 @@ public class AuthorizationService : IAuthorizationService
     private readonly IJwtDenyListRepository _denyListRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IEmailService _emailService;
+    private readonly JwtSettings _jwtSettings;
 
     /// <summary>
     /// Initializes a new instance of the AuthorizationService.
@@ -32,13 +36,15 @@ public class AuthorizationService : IAuthorizationService
     /// <param name="denyListRepository">Repository for managing JWT token deny list.</param>
     /// <param name="unitOfWork">Unit of work for database transaction management.</param>
     /// <param name="emailService">Email service for sending password reset emails.</param>
+    /// <param name="jwtOptions">JWT configuration options.</param>
     public AuthorizationService(
         UserManager<IdentityUser> userManager,
         IHttpContextAccessor httpContextAccessor,
         ILogger<AuthorizationService> logger,
         IJwtDenyListRepository denyListRepository,
         IUnitOfWork unitOfWork,
-        IEmailService emailService)
+        IEmailService emailService,
+        IOptions<JwtSettings> jwtOptions)
     {
         _userManager = userManager;
         _httpContextAccessor = httpContextAccessor;
@@ -46,6 +52,7 @@ public class AuthorizationService : IAuthorizationService
         _denyListRepository = denyListRepository;
         _unitOfWork = unitOfWork;
         _emailService = emailService;
+        _jwtSettings = jwtOptions.Value;
     }
 
     /// <summary>
@@ -58,8 +65,11 @@ public class AuthorizationService : IAuthorizationService
     /// </remarks>
     public async Task<Result<SignupResponse, string[]>> SignUp(SignupRequest signupRequest)
     {
+        _logger.LogInformation("User registration attempt for email: {Email}", signupRequest.Registration.Email);
+        
         if (!string.Equals(signupRequest.Registration.Password, signupRequest.Registration.PasswordConfirmation))
         {
+            _logger.LogWarning("Password confirmation mismatch during registration for email: {Email}", signupRequest.Registration.Email);
             return Result.Failure<SignupResponse, string[]>(["Password does not match with confirmation"]);
         }
 
@@ -71,15 +81,19 @@ public class AuthorizationService : IAuthorizationService
         var result = await _userManager.CreateAsync(identityUser, signupRequest.Registration.Password);
         if (!result.Succeeded)
         {
+            _logger.LogWarning("User registration failed for email: {Email}. Errors: {Errors}", 
+                signupRequest.Registration.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
             return Result.Failure<SignupResponse, string[]>(result.Errors.Select(x => x.Description).ToArray());
         }
 
         var user = await _userManager.FindByEmailAsync(signupRequest.Registration.Email);
         if (user is null)
         {
+            _logger.LogError("User not found after successful creation for email: {Email}", signupRequest.Registration.Email);
             return Result.Failure<SignupResponse, string[]>(["Unexpected signup error"]);
         }
 
+        _logger.LogInformation("User successfully registered with ID: {UserId}", user.Id);
         return new SignupResponse
         {
             Id = user.Id,
@@ -93,22 +107,26 @@ public class AuthorizationService : IAuthorizationService
     /// <param name="signInRequest">The sign-in request containing user credentials.</param>
     /// <returns>A result containing the sign-in response with JWT token or an error message.</returns>
     /// <remarks>
-    /// Generates a JWT token with 60-minute expiration time using HMAC SHA-512 signature.
+    /// Generates a JWT token with configurable expiration time using HMAC SHA-512 signature.
     /// The token includes user ID, email, and a unique JTI (JWT ID) claim.
     /// </remarks>
     public async Task<Result<SignInResponse>> SignIn(SignInRequest signInRequest)
     {
+        _logger.LogInformation("Sign-in attempt for email: {Email}", signInRequest.User.Email);
+        
         var defaultFailure = Result.Failure<SignInResponse>("Email or password is incorrect");
 
         var user = await _userManager.FindByEmailAsync(signInRequest.User.Email);
         if (user is null)
         {
+            _logger.LogWarning("Sign-in failed: User not found for email: {Email}", signInRequest.User.Email);
             return defaultFailure;
         }
 
         var isPasswordValid = await _userManager.CheckPasswordAsync(user, signInRequest.User.Password);
         if (!isPasswordValid)
         {
+            _logger.LogWarning("Sign-in failed: Invalid password for email: {Email}", signInRequest.User.Email);
             return defaultFailure;
         }
 
@@ -121,19 +139,20 @@ public class AuthorizationService : IAuthorizationService
             new (JwtRegisteredClaimNames.Email, user.Email),
         });
 
-        var key = new SymmetricSecurityKey("SazsdfasgfdgfsdfSazsdfasgfdgfsdfSazsdfasgfdgfsdfSazsdfasgfdgfsdf"u8.ToArray());
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
 
         var descriptor = new SecurityTokenDescriptor
         {
             Subject = subject,
-            Expires = DateTime.UtcNow.AddMinutes(60),
-            Issuer = "https://auth.sportshub.example.com",
-            Audience = "https://app.sportshub.example.com",
+            Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpirationMinutes),
+            Issuer = _jwtSettings.Issuer,
+            Audience = _jwtSettings.Audience,
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature),
         };
 
         var jwt = handler.CreateEncodedJwt(descriptor);
 
+        _logger.LogInformation("User successfully signed in with ID: {UserId}", user.Id);
         return Result.Success(new SignInResponse
         {
             Id = user.Id,

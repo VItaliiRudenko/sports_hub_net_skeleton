@@ -2,8 +2,10 @@ using FakeItEasy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
 using SportsHub.Api.Models.Auth;
+using SportsHub.Api.Models.Configuration;
 using SportsHub.Api.Services;
 using SportsHub.Domain.Entities;
 using SportsHub.Domain.Repositories;
@@ -22,6 +24,7 @@ public class AuthorizationServiceTests
     private IJwtDenyListRepository _denyListRepository;
     private IUnitOfWork _unitOfWork;
     private IEmailService _emailService;
+    private IOptions<JwtSettings> _jwtOptions;
 
     [SetUp]
     public void SetUp()
@@ -36,6 +39,17 @@ public class AuthorizationServiceTests
         _denyListRepository = A.Fake<IJwtDenyListRepository>();
         _unitOfWork = A.Fake<IUnitOfWork>();
         _emailService = A.Fake<IEmailService>();
+        
+        // Create a fake JwtSettings with test values
+        var jwtSettings = new JwtSettings
+        {
+            SecretKey = "this-is-a-very-long-secret-key-for-testing-purposes-at-least-32-characters",
+            Issuer = "test-issuer",
+            Audience = "test-audience",
+            ExpirationMinutes = 60
+        };
+        _jwtOptions = A.Fake<IOptions<JwtSettings>>();
+        A.CallTo(() => _jwtOptions.Value).Returns(jwtSettings);
 
         _sut = new AuthorizationService(
             _userManager,
@@ -43,7 +57,8 @@ public class AuthorizationServiceTests
             _logger,
             _denyListRepository,
             _unitOfWork,
-            _emailService);
+            _emailService,
+            _jwtOptions);
     }
 
     [Test]

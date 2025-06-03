@@ -10,8 +10,8 @@ public class SignInRequest
     /// <summary>
     /// User authentication credentials
     /// </summary>
-    [Required]
-    public SignInRequestUserModel User { get; set; }
+    [Required(ErrorMessage = "User credentials are required")]
+    public SignInRequestUserModel User { get; set; } = new();
 }
 
 /// <summary>
@@ -23,13 +23,16 @@ public class SignInRequestUserModel
     /// User's email address
     /// </summary>
     /// <example>user@example.com</example>
-    [Required]
-    public string Email { get; set; }
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Please provide a valid email address")]
+    [StringLength(254, ErrorMessage = "Email cannot exceed 254 characters")]
+    public string Email { get; set; } = string.Empty;
 
     /// <summary>
     /// User's password
     /// </summary>
-    /// <example>SecurePassword123</example>
-    [Required]
-    public string Password { get; set; }
+    /// <example>SecurePassword123!</example>
+    [Required(ErrorMessage = "Password is required")]
+    [StringLength(100, MinimumLength = 1, ErrorMessage = "Password is required")]
+    public string Password { get; set; } = string.Empty;
 }

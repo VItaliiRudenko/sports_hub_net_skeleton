@@ -11,7 +11,8 @@ public class ForgotPasswordRequest
     /// User's email address for password reset
     /// </summary>
     /// <example>user@example.com</example>
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; }
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Please provide a valid email address")]
+    [StringLength(254, ErrorMessage = "Email cannot exceed 254 characters")]
+    public string Email { get; set; } = string.Empty;
 } 
