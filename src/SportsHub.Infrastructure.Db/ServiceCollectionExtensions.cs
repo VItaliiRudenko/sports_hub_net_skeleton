@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IArticlesRepository, ArticlesRepository>();
         services.AddScoped<IJwtDenyListRepository, JwtDenyListRepository>();
+        services.AddScoped<ILanguagesRepository, LanguagesRepository>();
 
         services.AddScoped<IFileStorage, DbFileStorage>();
     }

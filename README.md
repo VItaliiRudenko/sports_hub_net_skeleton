@@ -7,6 +7,18 @@ This is a draft pet project for testing Generative AI on different software engi
 ## Available Front-End applications
 - [Angular](https://github.com/dark-side/sports_hub_angular_skeleton)
 
+## Testing
+
+### Running Tests
+```bash
+# Run all tests
+dotnet test
+
+# Run specific test project
+dotnet test tests/SportsHub.Api.UnitTests/
+dotnet test tests/SportsHub.Api.IntegrationTests/
+```
+
 ## Dependencies
 
 - Rancher
@@ -48,6 +60,24 @@ docker exec -ti <CONTAINER ID> /bin/bash
 
 Migrations are automatically applied on application start.
 
+### Configuration
+
+The application supports the following configuration sections:
+
+#### SMTP Configuration (Optional)
+```json
+{
+  "Smtp": {
+    "Host": "smtp.example.com",
+    "Port": "587",
+    "Username": "your-email@example.com",
+    "Password": "your-password"
+  }
+}
+```
+
+**Note**: If SMTP configuration is missing, the email service will gracefully degrade and log warnings instead of crashing the application.
+
 ### Running on Windows (Tips & Tricks)
 
 While running the App on Windows 11 using WSL, you may face issues related to Unix-style line endings (especially if you are storing the project(s) under the host machine filesystem, not the WSL one (e.g., the project is cloned to the disc `c:` or any other disk you have instead of being cloned to the WSL filesystem). Working within the WSL filesystem is a best practice when developing on Windows, as it helps prevent line ending and permission issues that can arise when using the Windows filesystem. I'm just reminding you that this will save you time and headaches for future projects.
@@ -76,6 +106,23 @@ chmod +x app/SportsHub.Api
 To access the application in a browser locally, open the following URL:
 - Mac, Linux - `http://localhost:3000/`
 - Windows - `http://127.0.0.1:3000/`
+
+## Development
+
+### Project Structure
+```
+src/
+├── SportsHub.Api/              # Web API layer
+├── SportsHub.Domain/           # Domain entities and business logic
+├── SportsHub.Infrastructure.Db/ # Database access layer
+└── SportsHub.Infrastructure.Db.Migrations/ # EF migrations
+
+tests/
+├── SportsHub.Api.UnitTests/    # Unit tests
+└── SportsHub.Api.IntegrationTests/ # Integration tests
+```
+
+All services include comprehensive XML documentation for IntelliSense support.
 
 ## License
 
